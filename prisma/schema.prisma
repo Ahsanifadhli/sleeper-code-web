@@ -1,0 +1,55 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Tabel untuk Proyek
+model Project {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String   @db.Text
+  image       String?  
+  techStack   String   
+  demoLink    String?
+  repoLink    String?
+  createdAt   DateTime @default(now())
+}
+
+// Tabel untuk Sertifikat
+model Certificate {
+  id          Int      @id @default(autoincrement())
+  title       String
+  issuer      String
+  date        String
+  category    String   
+  credentialLink String?
+  description String?  @db.Text // Tambahan deskripsi biar lengkap
+  createdAt   DateTime @default(now())
+}
+
+// Tabel untuk Blog
+model Blog {
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique
+  title       String
+  excerpt     String   @db.Text
+  content     String   @db.LongText 
+  category    String   
+  tags        String   
+  createdAt   DateTime @default(now())
+}
+
+// Tabel untuk Pesan Masuk
+model Message {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+}
