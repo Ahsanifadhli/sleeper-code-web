@@ -3,16 +3,16 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Award, Calendar, ShieldCheck, ExternalLink, Filter } from "lucide-react";
 
-// (Interface Certificate tetap sama...)
+// Interface Data
 interface Certificate {
-    id: number;
-    title: string;
-    issuer: string;
-    date: string;
-    category: string;
-    credentialLink: string | null;
-    description: string | null;
-  }
+  id: number;
+  title: string;
+  issuer: string;
+  date: string;
+  category: string;
+  credentialLink: string | null;
+  description: string | null;
+}
 
 export default function CertificateList({ certificates }: { certificates: Certificate[] }) {
   const [activeFilter, setActiveFilter] = useState<"All" | "Akademik" | "Non Akademik">("All");
@@ -26,7 +26,6 @@ export default function CertificateList({ certificates }: { certificates: Certif
       {/* HEADER & FILTER */}
       <div className="space-y-6 text-center md:text-left border-b border-cyber-primary/20 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          {/* Font Responsif */}
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold font-mono text-transparent bg-clip-text bg-gradient-to-r from-cyber-primary to-cyber-neon leading-tight">
             // Credentials
           </h1>
@@ -64,11 +63,12 @@ export default function CertificateList({ certificates }: { certificates: Certif
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ duration: 0.3 }}
               key={cert.id}
-              className="group relative bg-cyber-dark/40 border border-cyber-primary/20 rounded-xl p-5 sm:p-6 hover:bg-cyber-dark/60 hover:border-cyber-primary transition-all duration-300 overflow-hidden flex flex-col h-full"
+              className="group relative bg-cyber-dark/40 border border-cyber-primary/20 rounded-xl p-5 sm:p-6 hover:bg-cyber-dark/60 hover:border-cyber-primary transition-all duration-300 overflow-hidden flex flex-col h-full hover:-translate-y-1 shadow-lg"
             >
               {/* Efek Garis Scan */}
               <div className="absolute top-0 left-0 w-full h-[1px] bg-cyber-primary/50 shadow-[0_0_10px_#0ea5e9] translate-y-[-100%] group-hover:translate-y-[400px] transition-transform duration-1000"></div>
 
+              {/* Icon & Category */}
               <div className="flex items-start justify-between mb-4">
                 <div className="p-2 sm:p-3 bg-cyber-primary/10 rounded-lg text-cyber-primary group-hover:scale-110 transition-transform">
                   <Award className="w-6 h-6 sm:w-8 sm:h-8" />
@@ -83,14 +83,19 @@ export default function CertificateList({ certificates }: { certificates: Certif
               </div>
 
               <div className="flex-grow">
-                <h3 className="text-lg sm:text-xl font-bold text-gray-100 mb-2 group-hover:text-cyber-neon transition-colors line-clamp-2">
+                {/* --- BAGIAN JUDUL (FULL TEXT) --- */}
+                {/* break-words: Biar teks panjang turun ke bawah otomatis */}
+                <h3 className="text-lg sm:text-xl font-bold text-gray-100 mb-2 group-hover:text-cyber-neon transition-colors break-words">
                   {cert.title}
                 </h3>
+
+                {/* Deskripsi (Tetap dibatasi 3 baris biar kartu tidak kepanjangan banget) */}
                 <p className="text-gray-400 text-xs sm:text-sm mb-4 line-clamp-3">
                   {cert.description}
                 </p>
               </div>
               
+              {/* Footer Info */}
               <div className="mt-4 pt-4 border-t border-gray-800 space-y-3">
                 <div className="flex flex-col gap-2 text-[10px] sm:text-xs text-gray-500 font-mono">
                   <div className="flex items-center gap-2">
@@ -103,7 +108,12 @@ export default function CertificateList({ certificates }: { certificates: Certif
                   </div>
                 </div>
 
-                <a href={cert.credentialLink || "#"} target="_blank" className="flex items-center justify-center w-full py-2 mt-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-cyber-primary border border-cyber-primary/30 rounded hover:bg-cyber-primary hover:text-cyber-black transition-colors">
+                <a 
+                  href={cert.credentialLink || "#"} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center w-full py-2 mt-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-cyber-primary border border-cyber-primary/30 rounded hover:bg-cyber-primary hover:text-cyber-black transition-colors"
+                >
                   Verify Credential <ExternalLink className="w-3 h-3 ml-2" />
                 </a>
               </div>
