@@ -1,29 +1,40 @@
 import MatrixRain from "@/components/animations/MatrixRain";
-import BlogList from "@/components/views/BlogList"; // Import komponen client
-import prisma from "@/lib/prisma";
+import BlogList from "@/components/views/BlogList"; 
+import { PrismaClient } from "@prisma/client";
+
+// 1. Fix TypeScript Error: Pakai (global as any)
+const prisma = (global as any).prisma || new PrismaClient();
+
+if (process.env.NODE_ENV !== "production") {
+  (global as any).prisma = prisma;
+}
+
+// 2. Fix Vercel Cache: Wajib ada biar data selalu update
+export const dynamic = "force-dynamic"; 
 
 export default async function BlogPage() {
-  // 1. Ambil data dari Database
+  // 3. Ambil data dari Database
   const rawBlogs = await prisma.blog.findMany({
     orderBy: {
-      createdAt: 'desc', // Artikel terbaru di atas
+      createdAt: 'desc', 
     },
   });
 
-  // 2. Format Data (Terutama Tags dan Tanggal)
-  const formattedBlogs = rawBlogs.map((blog) => ({
+  // 4. Format Data agar sesuai dengan Interface di BlogList
+  const formattedBlogs = rawBlogs.map((blog: any) => ({
     ...blog,
-    // Mengubah tanggal Date object jadi String ISO biar aman dikirim ke Client Component
+    // Ubah format tanggal ke String ISO
     date: blog.createdAt.toISOString(), 
-    // Mengubah string "Security, Database" menjadi array ["Security", "Database"]
-    tags: blog.tags ? blog.tags.split(',').map(tag => tag.trim()) : [],
+    // Ubah string tags "React, JS" menjadi array ["React", "JS"]
+    tags: blog.tags ? blog.tags.split(',').map((tag: string) => tag.trim()) : [],
   }));
 
   return (
     <div className="relative min-h-screen py-20 px-4 sm:px-6 lg:px-8">
+      {/* Background Matrix Rain */}
       <MatrixRain />
       
-      {/* Lempar data yang sudah diformat ke Client Component */}
+      {/* Panggil Tampilan Keren (List Style) */}
       <BlogList blogs={formattedBlogs} />
     </div>
   );

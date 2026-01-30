@@ -4,16 +4,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Terminal, Clock, ChevronRight, Hash, BookOpen, Code2, Filter } from "lucide-react";
 import Link from "next/link";
 
-// (Interface BlogPost tetap sama...)
+// Tipe Data yang diterima dari Server
 interface BlogPost {
-    id: number;
-    title: string;
-    excerpt: string;
-    date: string; 
-    tags: string[];
-    category: string;
-    slug: string;
-  }
+  id: number;
+  title: string;
+  excerpt: string;
+  date: string;
+  tags: string[];
+  category: string;
+  slug: string;
+}
 
 export default function BlogList({ blogs }: { blogs: BlogPost[] }) {
   const [activeFilter, setActiveFilter] = useState<"All" | "Coding" | "Islamic">("All");
@@ -23,7 +23,7 @@ export default function BlogList({ blogs }: { blogs: BlogPost[] }) {
     : blogs.filter(post => post.category === activeFilter);
 
   return (
-    <div className="max-w-4xl mx-auto space-y-12">
+    <div className="max-w-4xl mx-auto space-y-12 relative z-10">
       {/* HEADER & FILTER */}
       <div className="space-y-6 sm:space-y-8 text-center">
         <div className="space-y-4">
@@ -62,6 +62,12 @@ export default function BlogList({ blogs }: { blogs: BlogPost[] }) {
       {/* LIST BLOG */}
       <motion.div layout className="space-y-4 sm:space-y-6">
         <AnimatePresence mode="popLayout">
+          {filteredBlogs.length === 0 && (
+             <div className="text-center py-20 opacity-50">
+                <p className="font-mono text-gray-400">// No logs found in this sector.</p>
+             </div>
+          )}
+
           {filteredBlogs.map((post) => (
             <motion.div
               key={post.id}
