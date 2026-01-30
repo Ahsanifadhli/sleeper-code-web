@@ -1,8 +1,18 @@
 import ProjectCard from "@/components/ui/ProjectCard";
 import MatrixRain from "@/components/animations/MatrixRain";
-import prisma from "@/lib/prisma";
+import { PrismaClient } from "@prisma/client";
+
+// --- 1. Fix TypeScript Error ---
+const prisma = (global as any).prisma || new PrismaClient();
+if (process.env.NODE_ENV !== "production") {
+  (global as any).prisma = prisma;
+}
+
+// --- 2. Fix Vercel Cache (WAJIB ADA) ---
+export const dynamic = "force-dynamic"; 
 
 export default async function ProjectsPage() {
+  // 3. Ambil data Project Terbaru
   const projects = await prisma.project.findMany({
     orderBy: { createdAt: 'desc' },
   });
@@ -11,7 +21,7 @@ export default async function ProjectsPage() {
     <div className="relative min-h-screen py-20 px-0"> {/* Hapus padding bawaan */}
       <MatrixRain />
       
-      {/* WRAPPER STANDAR BARU */}
+      {/* WRAPPER STANDAR BARU (UI SESUAI REQUEST) */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 lg:px-16 space-y-8 sm:space-y-12">
         
         {/* Header Section */}
@@ -26,13 +36,14 @@ export default async function ProjectsPage() {
 
         {/* Grid Projects */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {projects.map((project, index) => (
+          {projects.map((project: any, index: number) => (
             <ProjectCard
               key={project.id}
               index={index}
               title={project.title}
               description={project.description}
-              tags={project.techStack.split(',').map(tag => tag.trim())} 
+              // Amanin split tags biar gak error kalau kosong
+              tags={project.techStack ? project.techStack.split(',').map((tag: string) => tag.trim()) : []} 
               image={project.image || undefined}
               demoLink={project.demoLink || "#"}
               repoLink={project.repoLink || "#"}
